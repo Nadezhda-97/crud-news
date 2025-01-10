@@ -1,8 +1,14 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
+import { NewsItem } from '../types/NewsItem';
 
-const NewsForm = ({ onSubmit, existingItem }) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+interface NewsFormProps {
+  onSubmit: (item: NewsItem) => void;
+  existingItem?: NewsItem;
+}
+
+const NewsForm: React.FC<NewsFormProps> = ({ onSubmit, existingItem }) => {
+  const [title, setTitle] = useState<string>('');
+  const [content, setContent] = useState<string>('');
 
   useEffect(() => {
     if (existingItem) {
@@ -11,7 +17,7 @@ const NewsForm = ({ onSubmit, existingItem }) => {
     }
   }, [existingItem]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     const item = {
       id: existingItem ? existingItem.id : Date.now(),
@@ -39,7 +45,7 @@ const NewsForm = ({ onSubmit, existingItem }) => {
         onChange={(e) => setContent(e.target.value)}
         required
       />
-      <button type="submit">{existingItem ? 'Обновить' : 'Добавить'}</button> /// только Добавить
+      <button type="submit">{existingItem ? 'Обновить' : 'Добавить'}</button>
     </form>
   );
 };
