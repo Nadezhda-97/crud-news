@@ -1,11 +1,12 @@
 import './App.css'
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import NewsList from './components/NewsList';
 import NewsForm from './components/NewsForm';
+import { NewsItem } from './types/NewsItem';
 
-const App = () => {
-  const [news, setNews] = useState([]);
-  const [editingItem, setEditingItem] = useState(null);
+const App: React.FC = () => {
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [editingItem, setEditingItem] = useState<NewsItem | null>(null);
 
   useEffect(() => {
     const storedNews = localStorage.getItem('news');
@@ -18,7 +19,7 @@ const App = () => {
     localStorage.setItem('news', JSON.stringify(news));
   }, [news]);
 
-  const handleAddOrUpdate = (item) => { // здесь только add
+  const handleAddOrUpdate = (item: NewsItem) => {
     if (editingItem) {
       setNews(news.map((n) => (n.id === item.id ? item : n)));
       setEditingItem(null);
@@ -27,11 +28,11 @@ const App = () => {
     }
   };
 
-  const handleEdit = (item) => {
+  const handleEdit = (item: NewsItem) => {
     setEditingItem(item);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     setNews(news.filter((n) => n.id !== id));
   };
 
