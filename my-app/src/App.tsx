@@ -1,4 +1,3 @@
-import './App.css'
 import React, { useEffect, useState } from 'react';
 import NewsList from './components/NewsList';
 import NewsForm from './components/NewsForm';
