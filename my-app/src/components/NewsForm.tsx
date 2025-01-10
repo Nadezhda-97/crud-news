@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { NewsItem } from '../types/NewsItem';
 
 interface NewsFormProps {
@@ -6,46 +8,66 @@ interface NewsFormProps {
   existingItem?: NewsItem;
 }
 
+const schema = Yup.object({
+  title: Yup.string()
+    .max(100, 'Заголовок не должен быть длиннее 100 символов')
+    .required('Заголовок обязателен'),
+  content: Yup.string()
+    .min(5, 'Содержание должно содержать минимум 5 символов')
+    .required('Содержание обязательно'),
+});
+
 const NewsForm: React.FC<NewsFormProps> = ({ onSubmit, existingItem }) => {
-  const [title, setTitle] = useState<string>('');
-  const [content, setContent] = useState<string>('');
+  //const [title, setTitle] = useState<string>('');
+  //const [content, setContent] = useState<string>('');
+
+  const formik = useFormik({
+    initialValues: {
+      title: existingItem ? existingItem.title : '',
+      content: existingItem ? existingItem.content : '',
+    },
+    validationSchema: schema,
+    onSubmit: (values) => {
+      const item = {
+        id: existingItem ? existingItem.id : Date.now(),
+        title: values.title,
+        content: values.content,
+      };
+      onSubmit(item);
+      formik.resetForm();
+    }
+  })
 
   useEffect(() => {
     if (existingItem) {
-      setTitle(existingItem.title);
-      setContent(existingItem.content);
+      formik.setValues({
+        title: existingItem.title,
+        content: existingItem.content
+      });
     }
-  }, [existingItem]);
-
-  const handleSubmit = (event: React.FormEvent) => {
-    event.preventDefault();
-    const item = {
-      id: existingItem ? existingItem.id : Date.now(),
-      title,
-      content,
-    };
-    onSubmit(item);
-    setTitle('');
-    setContent('');
-  };
+  }, [formik, existingItem]);
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={formik.handleSubmit}>
       <input
         type="text"
         placeholder="Заголовок"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        required
+        {...formik.getFieldProps('title')}
         autoFocus
       />
+      {formik.touched.title && formik.errors.title ? (
+        <div className="error-message">{formik.errors.title}</div>
+      ) : null}
       <textarea
         placeholder="Содержание"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        required
+        {...formik.getFieldProps('content')}
       />
-      <button type="submit">{existingItem ? 'Обновить' : 'Добавить'}</button>
+      {formik.touched.content && formik.errors.content ? (
+        <div className="error-message">{formik.errors.content}</div>
+      ) : null}
+      <button type="submit" disabled={!formik.isValid || formik.isSubmitting}>
+        {existingItem ? 'Обновить' : 'Добавить'}
+      </button>
     </form>
   );
 };
