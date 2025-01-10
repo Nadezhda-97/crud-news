@@ -1,35 +1,47 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import { useEffect, useState } from 'react';
+import NewsList from './components/NewsList';
+import NewsForm from './components/NewsForm';
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+  const [news, setNews] = useState([]);
+  const [editingItem, setEditingItem] = useState(null);
+
+  useEffect(() => {
+    const storedNews = localStorage.getItem('news');
+    if (storedNews) {
+      setNews(JSON.parse(storedNews));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('news', JSON.stringify(news));
+  }, [news]);
+
+  const handleAddOrUpdate = (item) => { // здесь только add
+    if (editingItem) {
+      setNews(news.map((n) => (n.id === item.id ? item : n)));
+      setEditingItem(null);
+    } else {
+      setNews([...news, item]);
+    }
+  };
+
+  const handleEdit = (item) => {
+    setEditingItem(item);
+  };
+
+  const handleDelete = (id) => {
+    setNews(news.filter((n) => n.id !== id));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div>
+      <h1>CRUD Новостей</h1>
+      <NewsForm onSubmit={handleAddOrUpdate} existingItem={editingItem} />
+      <NewsList news={news} onEdit={handleEdit} onDelete={handleDelete} />
+    </div>
+  );
+};
 
 export default App
