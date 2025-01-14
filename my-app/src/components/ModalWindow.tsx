@@ -28,7 +28,7 @@ const ModalWindow: React.FC<ModalWindowProps> = ({ isOpen, onClose, onUpdate, ed
             onClose={onClose}
           />
         )}
-      <button className="modal-close-button" onClick={onClose}>Закрыть</button>
+      <button className="modal-close-button" onClick={onClose}>Отменить</button>
     </Modal>
   );
 };
