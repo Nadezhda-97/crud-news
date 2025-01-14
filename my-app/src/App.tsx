@@ -45,7 +45,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      <h1>CRUD Новостей</h1>
+      <h1>Редактор новостей</h1>
       <NewsForm onSubmit={handleAdd} />
       <NewsList news={news} onEdit={handleEdit} onDelete={handleDelete} />
       <ModalWindow 
